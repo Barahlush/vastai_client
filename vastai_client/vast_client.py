@@ -84,7 +84,6 @@ class VastClient:
             query_args = {}
 
         query_args["api_key"] = self.api_key
-        logger.info(f"query_args: {query_args}")
 
         if query_args:
             return (
