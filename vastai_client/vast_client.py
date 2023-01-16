@@ -4,7 +4,6 @@ from __future__ import print_function, unicode_literals
 
 import json
 import os
-import subprocess
 import sys
 import time
 from dataclasses import asdict
@@ -107,9 +106,10 @@ class VastClient:
         """Copy directories between instances and/or local..
 
         Args:
-            src (str): instance_id:/path to source of object to copy.
-            dst (str): instance_id:/path to target of copy operation.
-            identity (str | None, optional):  Location of ssh private key. Optional.
+        ----
+        src (str): instance_id:/path to source of object to copy.
+        dst (str): instance_id:/path to target of copy operation.
+        identity (str | None, optional):  Location of ssh private key. Optional.
         """
         url = self.apiurl('/commands/rsync/')
         src_id, src_path = parse_vast_url(src)
@@ -159,8 +159,8 @@ class VastClient:
         note: to encode a string query value (ie for gpu_name), replace any spaces ' ' with underscore '_'
 
 
-        Examples:
-
+        Examples
+        --------
             ./vast search offers 'compute_cap > 610 total_flops < 5'
             ./vast search offers 'reliability > 0.99  num_gpus>=4' -o 'num_gpus-'
             ./vast search offers 'rentable = any'
