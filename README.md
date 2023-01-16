@@ -1,6 +1,5 @@
 # vastai-client
 
-[![Build Status](https://github.com/Barahlush/vastai-client/workflows/test/badge.svg?branch=master&event=push)](https://github.com/Barahlush/vastai-client/actions?query=workflow%3Atest)
 [![Python Version](https://img.shields.io/pypi/pyversions/vastai-client.svg)](https://pypi.org/project/vastai-client/)
 [![wemake-python-styleguide](https://img.shields.io/badge/style-wemake-000000.svg)](https://github.com/wemake-services/wemake-python-styleguide)
 
