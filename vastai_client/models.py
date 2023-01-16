@@ -46,7 +46,7 @@ class Instance:
     gpu_util: float | None = None
     has_avx: int | None = None
     host_id: int | None = None
-    hosting_type: str | None = None
+    hosting_type: int | None = None
     id: int | None = None
     image_args: list[str] | None = None
     image_runtype: str | None = None
@@ -127,7 +127,7 @@ class Machine:
     gpu_ram: int | None = None
     has_avx: int | None = None
     host_id: int | None = None
-    hosting_type: str | None = None
+    hosting_type: int | None = None
     id: int | None = None
     inet_down: float | None = None
     inet_down_billed: float | None = None
@@ -147,6 +147,7 @@ class Machine:
     public_ipaddr: str | None = None
     reliability2: float | None = None
     rented: bool | None = None
+    rentable: bool | None = None
     score: float | None = None
     start_date: float | None = None
     storage_cost: float | None = None

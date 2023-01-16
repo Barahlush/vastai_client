@@ -8,11 +8,13 @@ import subprocess
 import sys
 import time
 from dataclasses import asdict
+from dacite import from_dict
+
 
 import requests
 from loguru import logger
-from models import Instance, Machine, QueryType
-from vast_utils import parse_env, parse_query, parse_vast_url
+from vastai_client.models import Instance, Machine, QueryType
+from vastai_client.vast_utils import parse_env, parse_query, parse_vast_url
 
 try:
     from urllib import quote_plus  # type: ignore # Python 2.X
@@ -45,7 +47,7 @@ class VastClient:
         self,
         api_key: str | None = None,
         url: str = server_url_default,
-        api_key_file: str = api_key_file_base,
+        api_key_file: str = api_key_file,
     ):
         """VastClient constructor.
         Args:
@@ -58,22 +60,20 @@ class VastClient:
             ValueError: Must provide `api_key` or `api_key_file_base` where the key is stored.
         """
         self.url = url
-        if api_key is None:
-            try:
-                with open(api_key_file, 'r') as f:
-                    self.api_key = f.read().strip()
-            except Exception:
-                raise ValueError(
-                    "Must provide `api_key` or `api_key_file_base` where the key is stored."
-                )
-        else:
+        if api_key is None and not os.path.exists(api_key_file):
+            raise ValueError(
+                "Must provide `api_key` or `api_key_file_base` where the key is stored."
+            )
+        elif api_key:
             self.api_key = api_key
+        else:
+            with open(api_key_file, 'r') as f:
+                self.api_key = f.read().strip()
 
     def apiurl(
         self,
         subpath: str,
-        query_args: dict[str, bool | str | list[list[str]] | dict[str, str | bool]]
-        | None = None,
+        query_args: dict[str, str | QueryType] | None = None,
     ) -> str:
         """Creates the endpoint URL for a given combination of parameters.
 
@@ -85,6 +85,7 @@ class VastClient:
             query_args = {}
 
         query_args["api_key"] = self.api_key
+        logger.info(f"query_args: {query_args}")
 
         if query_args:
             return (
@@ -93,7 +94,9 @@ class VastClient:
                 + subpath
                 + "?"
                 + "&".join(
-                    "{x}={y}".format(x=x, y=quote_plus(y))
+                    "{x}={y}".format(
+                        x=x, y=quote_plus(y if isinstance(y, str) else json.dumps(y))
+                    )
                     for x, y in query_args.items()
                 )
             )
@@ -107,16 +110,10 @@ class VastClient:
             src (str): instance_id:/path to source of object to copy.
             dst (str): instance_id:/path to target of copy operation.
             identity (str | None, optional):  Location of ssh private key. Optional.
-
-        Raises
-        ------
-            ValueError: Must specify both src and dst instance ids.
         """
         url = self.apiurl('/commands/rsync/')
         src_id, src_path = parse_vast_url(src)
         dst_id, dst_path = parse_vast_url(dst)
-        if src_id is None or dst_id is None:
-            raise ValueError("Must specify both src and dst instance ids.")
         logger.info(f'copying {src_id}:{src_path} {dst_id}:{dst_path}')
         req_json = {
             'client_id': 'me',
@@ -129,26 +126,7 @@ class VastClient:
         r.raise_for_status()
         if r.status_code == 200:
             rj = r.json()
-            if rj['success'] and (src_id is None or dst_id is None):
-                homedir = subprocess.getoutput('echo $HOME')
-                remote_port = None
-                identity = (
-                    identity if identity is not None else f'{homedir}/.ssh/id_rsa'
-                )
-                if src_id is None:
-                    remote_port = rj['dst_port']
-                    remote_addr = rj['dst_addr']
-                    cmd = f"sudo rsync -arz -v --progress --rsh=ssh -e 'sudo ssh -i {identity} -p {remote_port} -o StrictHostKeyChecking=no' {src_path} vastai_kaalia@{remote_addr}::{dst_id}/{dst_path}"
-                    logger.info(cmd)
-                    result = subprocess.run(cmd, shell=True)
-                elif dst_id is None:
-                    result = subprocess.run(f'mkdir -p {dst_path}', shell=True)
-                    remote_port = rj['src_port']
-                    remote_addr = rj['src_addr']
-                    cmd = f"sudo rsync -arz -v --progress --rsh=ssh -e 'sudo ssh -i {identity} -p {remote_port} -o StrictHostKeyChecking=no' vastai_kaalia@{remote_addr}::{src_id}/{src_path} {dst_path}"
-                    logger.info(cmd)
-                    result = subprocess.run(cmd, shell=True)
-            elif rj['success']:
+            if rj['success']:
                 logger.info(
                     'Remote to Remote copy initiated - check instance status bar for progress updates (~30 seconds delayed).'
                 )
@@ -282,7 +260,7 @@ class VastClient:
         r = requests.get(url, timeout=10)
         r.raise_for_status()
         rows = r.json()['offers']
-        return [Machine(**row) for row in rows]
+        return [from_dict(data_class=Machine, data=row) for row in rows]
 
     def get_instances(self) -> list[Instance]:
         """Display user's current instances."""
@@ -290,7 +268,7 @@ class VastClient:
         r = requests.get(req_url, timeout=10)
         r.raise_for_status()
         rows = r.json()['instances']
-        return [Instance(**row) for row in rows]
+        return [from_dict(data_class=Instance, data=row) for row in rows]
 
     def ssh_url(self, instance_id: int) -> str | None:
         """ssh url helper.
@@ -343,7 +321,7 @@ class VastClient:
         r = requests.get(req_url, timeout=10)
         r.raise_for_status()
         rows = r.json()['machines']
-        return [Machine(**row) for row in rows]
+        return [from_dict(data_class=Machine, data=row) for row in rows]
 
     def show_hosted_machines(self, quiet: bool, raw: bool) -> None:
         """[Host] Show hosted machines.
@@ -678,4 +656,4 @@ class VastClient:
         """
         with open(api_key_file, 'w') as writer:
             writer.write(new_api_key)
-        logger.info('Your api key has been saved in {}'.format(api_key_file_base))
+        logger.info('Your api key has been saved in {}'.format(api_key_file))

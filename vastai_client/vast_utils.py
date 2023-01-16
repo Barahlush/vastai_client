@@ -4,7 +4,8 @@ import json
 import re
 
 from loguru import logger
-from models import QueryType
+
+from vastai_client.models import QueryType
 
 try:
     JSONDecodeError = json.JSONDecodeError
@@ -111,8 +112,9 @@ def parse_query(
         if value in ["?", "*", "any"]:
             if op_name != "eq":
                 raise ValueError("Wildcard only makes sense with equals.")
-            if field in v:
-                del v[field]
+            if type(v) is dict:
+                if field in v:
+                    del v[field]
             if field in res:
                 del res[field]
             continue
@@ -120,7 +122,8 @@ def parse_query(
         if field in field_multiplier:
             value = str(float(value) * field_multiplier[field])
 
-        v[op_name] = value.replace('_', ' ')
+        if type(v) is dict:
+            v[op_name] = value.replace('_', ' ')
         res[field] = v
     return res
 
