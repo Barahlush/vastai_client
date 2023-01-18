@@ -2611,15 +2611,15 @@ files = [
 ]
 
 [[package]]
-name = "Sphinx"
-version = "5.2.3"
+name = "sphinx"
+version = "5.3.0"
 description = "Python documentation generator"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "Sphinx-5.2.3.tar.gz", hash = "sha256:5b10cb1022dac8c035f75767799c39217a05fc0fe2d6fe5597560d38e44f0363"},
-    {file = "sphinx-5.2.3-py3-none-any.whl", hash = "sha256:7abf6fabd7b58d0727b7317d5e2650ef68765bbe0ccb63c8795fa8683477eaa2"},
+    {file = "Sphinx-5.3.0.tar.gz", hash = "sha256:51026de0a9ff9fc13c05d74913ad66047e104f56a129ff73e174eb5c3ee794b5"},
+    {file = "sphinx-5.3.0-py3-none-any.whl", hash = "sha256:060ca5c9f7ba57a08a1219e547b269fadf125ae25b06b9fa7f66768efb652d6d"},
 ]
 
 [package.dependencies]
@@ -2648,22 +2648,22 @@ test = ["cython", "html5lib", "pytest (>=4.6)", "typed_ast"]
 
 [[package]]
 name = "sphinx-autodoc-typehints"
-version = "1.19.4"
+version = "1.21.3"
 description = "Type hints (PEP 484) support for the Sphinx autodoc extension"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sphinx_autodoc_typehints-1.19.4-py3-none-any.whl", hash = "sha256:e190d8ee8204c3de05a64f41cf10e592e987e4063c8ec0de7e4b11f6e036b2e2"},
-    {file = "sphinx_autodoc_typehints-1.19.4.tar.gz", hash = "sha256:ffd8e710f6757471b5c831c7ece88f52a9ff15f27836f4ef1c8695a64f8dcca8"},
+    {file = "sphinx_autodoc_typehints-1.21.3-py3-none-any.whl", hash = "sha256:7c7b7f0fb4865cab0842680adcb9f2d7b00fc76f91fac45039ec079cd29ab287"},
+    {file = "sphinx_autodoc_typehints-1.21.3.tar.gz", hash = "sha256:101e1473a35d3426632a4db6fb8bc5e218a9da5c72d8016764cae24183844fc4"},
 ]
 
 [package.dependencies]
-sphinx = ">=5.2.1"
+sphinx = ">=5.3"
 
 [package.extras]
-docs = ["furo (>=2022.9.15)", "sphinx (>=5.2.1)", "sphinx-autodoc-typehints (>=1.19.3)"]
-testing = ["covdefaults (>=2.2)", "coverage (>=6.4.4)", "diff-cover (>=7.0.1)", "nptyping (>=2.3.1)", "pytest (>=7.1.3)", "pytest-cov (>=3)", "sphobjinv (>=2.2.2)", "typing-extensions (>=4.3)"]
+docs = ["furo (>=2022.12.7)", "sphinx (>=6.1.3)", "sphinx-autodoc-typehints (>=1.21)"]
+testing = ["covdefaults (>=2.2.2)", "coverage (>=7.0.5)", "diff-cover (>=7.3)", "nptyping (>=2.4.1)", "pytest (>=7.2.1)", "pytest-cov (>=4)", "sphobjinv (>=2.3.1)", "typing-extensions (>=4.4)"]
 type-comment = ["typed-ast (>=1.5.4)"]
 
 [[package]]
