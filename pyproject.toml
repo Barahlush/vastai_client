@@ -52,7 +52,7 @@ tomli = "^2.0"
 black = {version = "^23.1a1", allow-prereleases = true}
 ipykernel = {version = "^6.20.2", python = ">=3.8,<4.0"}
 types-requests = "^2.28.11.7"
-ruff = "^0.0.223"
+ruff = ">=0.0.223,<0.0.258"
 build = "^0.10.0"
 twine = "^4.0.2"
 
